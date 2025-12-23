@@ -305,7 +305,7 @@ except Exception as e:
 
 ```bash
 # 1. 克隆项目
-git clone <repository-url>
+git clone https://github.com/wsman/MY-DOGE-HEALTH.git
 cd MY-DOGE-HEALTH
 
 # 2. 安装依赖
