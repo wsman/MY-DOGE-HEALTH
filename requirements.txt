@@ -3,3 +3,4 @@ openai>=1.0.0
 python-dotenv>=1.0.0
 PyQt6>=6.5.0
 PyQt6-WebEngine>=6.5.0
+matplotlib
