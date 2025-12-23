@@ -1,0 +1,51 @@
+{
+    "profiles": [
+        {
+            "name": "🚀 DeepSeek Chat (Standard)",
+            "base_url": "https://api.deepseek.com",
+            "model": "deepseek-chat",
+            "api_key": "YOUR_API_KEY_HERE"
+        },
+        {
+            "name": "🧠 DeepSeek Reasoner (R1 - Pro)",
+            "base_url": "https://api.deepseek.com",
+            "model": "deepseek-reasoner",
+            "api_key": "YOUR_API_KEY_HERE"
+        },
+        {
+            "name": "🏠 LM Studio (Local)",
+            "base_url": "http://localhost:1234/v1",
+            "model": "local-model",
+            "api_key": "lm-studio"
+        }
+    ],
+    "default_profile": "🧠 DeepSeek Reasoner (R1 - Pro)",
+    "macro_settings": {
+        "lookback_days": 120,
+        "volatility_window": 20
+    },
+    "health_metrics": {
+        "weight": {
+            "name": "体重",
+            "unit": "kg",
+            "target": 93.0,
+            "type": "max"
+        },
+        "deep_sleep": {
+            "name": "深度睡眠占比",
+            "unit": "%",
+            "target": 0.15,
+            "type": "min"
+        },
+        "hrv": {
+            "name": "HRV (8点)",
+            "unit": "ms",
+            "target": 50.0,
+            "type": "min"
+        }
+    },
+    "proxy_settings": {
+        "enabled": false,
+        "url": "http://127.0.0.1:7890"
+    }
+}
