@@ -305,9 +305,27 @@ class DatabaseManagerDialog(QDialog):
             db_path = get_health_db_path()
             conn = sqlite3.connect(db_path)
             
-            # 查询所有记录
-            query = "SELECT * FROM biometric_logs ORDER BY date DESC"
-            df = pd.read_sql_query(query, conn)
+            # 尝试查询，如果表不存在则创建
+            try:
+                query = "SELECT * FROM biometric_logs ORDER BY date DESC"
+                df = pd.read_sql_query(query, conn)
+            except sqlite3.OperationalError as e:
+                if "no such table" in str(e).lower():
+                    # 表不存在，调用初始化函数
+                    conn.close()  # 关闭当前连接
+                    
+                    # 导入并调用初始化函数
+                    from src.health.database import initialize_db
+                    success = initialize_db()
+                    if success:
+                        # 重新连接并查询
+                        conn = sqlite3.connect(db_path)
+                        df = pd.read_sql_query(query, conn)
+                    else:
+                        raise Exception("数据库表初始化失败")
+                else:
+                    raise e
+            
             conn.close()
             
             if df.empty:

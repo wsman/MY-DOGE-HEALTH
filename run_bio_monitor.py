@@ -93,16 +93,19 @@ def validate_api_key():
         return False
 
 def initialize_database():
-    """初始化数据库"""
+    """初始化数据库（确保两个数据库都存在）"""
     try:
-        # 导入数据库模块
-        from src.bio.database import initialize_db
+        # 导入数据库初始化工具
+        from src.utils.db_init import ensure_databases_exist
         
-        logger.info("正在初始化数据库...")
-        success = initialize_db()
+        logger.info("正在检查并初始化数据库...")
+        success, created = ensure_databases_exist()
         
         if success:
-            logger.info("数据库初始化成功")
+            if created:
+                logger.info(f"数据库初始化成功，创建了 {len(created)} 个数据库: {', '.join(created)}")
+            else:
+                logger.info("所有数据库都已存在，无需创建")
             return True
         else:
             logger.error("数据库初始化失败")

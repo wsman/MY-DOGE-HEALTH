@@ -12,7 +12,7 @@ from datetime import datetime
 # 添加src目录到Python路径
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
-from health.database import initialize_db, get_biometric_data, get_trend_data
+from health.database import get_biometric_data, get_trend_data
 from health.entry import main as entry_main
 from health.analyst import BiometricAnalyst, main as analyst_main
 from health.config import HealthConfig, get_default_config
@@ -305,10 +305,37 @@ def main():
         return 0
     
     try:
-        # 初始化数据库
-        if args.init or args.import_csv or args.report or args.entry or args.view_data:
-            print("🛠️ 初始化数据库...")
-            initialize_db()
+        # 自动确保数据库存在（初次运行时检查并创建）
+        if args.init or args.import_csv or args.report or args.entry or args.view_data or args.dashboard:
+            print("🔍 检查数据库...")
+            try:
+                from utils.db_init import ensure_databases_exist
+                success, created = ensure_databases_exist()
+                if success:
+                    if created:
+                        print(f"✅ 创建了 {len(created)} 个数据库: {', '.join(created)}")
+                    else:
+                        print("✅ 所有数据库都已存在")
+                else:
+                    print("❌ 数据库检查失败")
+                    return 1
+            except ImportError as e:
+                print(f"❌ 导入数据库工具失败: {e}")
+                return 1
+        
+        # 如果用户明确要求初始化，强制重新初始化
+        if args.init:
+            print("🔄 强制重新初始化数据库...")
+            try:
+                from utils.db_init import initialize_all_databases
+                if initialize_all_databases():
+                    print("✅ 数据库重新初始化成功")
+                else:
+                    print("❌ 数据库重新初始化失败")
+                    return 1
+            except ImportError as e:
+                print(f"❌ 导入数据库工具失败: {e}")
+                return 1
         
         # 导入CSV数据
         if args.import_csv:
