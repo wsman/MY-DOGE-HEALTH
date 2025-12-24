@@ -136,29 +136,37 @@ class HRVInputWidget(QWidget):
         self.hrv_0000.setSuffix(" ms")
         layout.addWidget(self.hrv_0000, 0, 1)
         
+        # 2点 HRV
+        layout.addWidget(QLabel("2点 HRV:"), 1, 0)
+        self.hrv_0200 = QSpinBox()
+        self.hrv_0200.setRange(0, 200)
+        self.hrv_0200.setValue(70)
+        self.hrv_0200.setSuffix(" ms")
+        layout.addWidget(self.hrv_0200, 1, 1)
+        
         # 4点 HRV
-        layout.addWidget(QLabel("4点 HRV:"), 1, 0)
+        layout.addWidget(QLabel("4点 HRV:"), 2, 0)
         self.hrv_0400 = QSpinBox()
         self.hrv_0400.setRange(0, 200)
         self.hrv_0400.setValue(85)
         self.hrv_0400.setSuffix(" ms")
-        layout.addWidget(self.hrv_0400, 1, 1)
+        layout.addWidget(self.hrv_0400, 2, 1)
+        
+        # 6点 HRV
+        layout.addWidget(QLabel("6点 HRV:"), 3, 0)
+        self.hrv_0600 = QSpinBox()
+        self.hrv_0600.setRange(0, 200)
+        self.hrv_0600.setValue(75)
+        self.hrv_0600.setSuffix(" ms")
+        layout.addWidget(self.hrv_0600, 3, 1)
         
         # 8点 HRV
-        layout.addWidget(QLabel("8点 HRV:"), 2, 0)
+        layout.addWidget(QLabel("8点 HRV:"), 4, 0)
         self.hrv_0800 = QSpinBox()
         self.hrv_0800.setRange(0, 200)
         self.hrv_0800.setValue(70)
         self.hrv_0800.setSuffix(" ms")
-        layout.addWidget(self.hrv_0800, 2, 1)
-        
-        # 12点 HRV
-        layout.addWidget(QLabel("12点 HRV:"), 3, 0)
-        self.hrv_1200 = QSpinBox()
-        self.hrv_1200.setRange(0, 200)
-        self.hrv_1200.setValue(75)
-        self.hrv_1200.setSuffix(" ms")
-        layout.addWidget(self.hrv_1200, 3, 1)
+        layout.addWidget(self.hrv_0800, 4, 1)
         
         self.setLayout(layout)
     
@@ -166,17 +174,19 @@ class HRVInputWidget(QWidget):
         """获取HRV值"""
         return {
             'hrv_0000': self.hrv_0000.value(),
+            'hrv_0200': self.hrv_0200.value(),
             'hrv_0400': self.hrv_0400.value(),
-            'hrv_0800': self.hrv_0800.value(),
-            'hrv_1200': self.hrv_1200.value()
+            'hrv_0600': self.hrv_0600.value(),
+            'hrv_0800': self.hrv_0800.value()
         }
     
-    def set_values(self, hrv_0000: int, hrv_0400: int, hrv_0800: int, hrv_1200: int):
+    def set_values(self, hrv_0000: int, hrv_0200: int, hrv_0400: int, hrv_0600: int, hrv_0800: int):
         """设置HRV值"""
         self.hrv_0000.setValue(hrv_0000)
+        self.hrv_0200.setValue(hrv_0200)
         self.hrv_0400.setValue(hrv_0400)
+        self.hrv_0600.setValue(hrv_0600)
         self.hrv_0800.setValue(hrv_0800)
-        self.hrv_1200.setValue(hrv_1200)
 
 class MetabolicInputWidget(QWidget):
     """代谢输入组件"""
@@ -752,14 +762,14 @@ class KPIDashboardWidget(QWidget):
         self.figure.tight_layout()
         self.canvas.draw()
     
-    def update_hrv_bar_chart(self, hrv_0000: int, hrv_0400: int, hrv_0800: int, hrv_1200: int):
+    def update_hrv_bar_chart(self, hrv_0000: int, hrv_0200: int, hrv_0400: int, hrv_0600: int, hrv_0800: int):
         """更新今日HRV柱状图"""
         # 清除旧图表
         self.bar_ax.clear()
         
-        times = ['0点', '4点', '8点', '12点']
-        values = [hrv_0000, hrv_0400, hrv_0800, hrv_1200]
-        colors = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0']
+        times = ['0点', '2点', '4点', '6点', '8点']
+        values = [hrv_0000, hrv_0200, hrv_0400, hrv_0600, hrv_0800]
+        colors = ['#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#E91E63']
         
         # 绘制柱状图
         bars = self.bar_ax.bar(times, values, color=colors)
@@ -783,7 +793,7 @@ class KPIDashboardWidget(QWidget):
         self.bar_canvas.draw()
     
     def update_kpis(self, weight: float, deep_sleep_ratio: float, hrv_0800: int, rules_triggered: list,
-                    hrv_0000: int = 0, hrv_0400: int = 0, hrv_1200: int = 0):
+                    hrv_0000: int = 0, hrv_0200: int = 0, hrv_0400: int = 0, hrv_0600: int = 0, hrv_1200: int = 0):
         """更新KPI显示和图表"""
         # 获取阈值（优先使用配置，否则使用默认）
         weight_target = 93.0
@@ -886,7 +896,7 @@ class KPIDashboardWidget(QWidget):
             self.rules_label.setStyleSheet("color: #4CAF50; font-weight: bold;")
         
         # 更新HRV柱状图
-        self.update_hrv_bar_chart(hrv_0000, hrv_0400, hrv_0800, hrv_1200)
+        self.update_hrv_bar_chart(hrv_0000, hrv_0200, hrv_0400, hrv_0600, hrv_0800)
         
         # 重新加载历史数据以更新趋势图
         self.load_history_data()
@@ -1141,9 +1151,10 @@ class BioDashboard(QMainWindow):
         # HRV
         self.hrv_input.set_values(
             target_data.get('hrv_0000', 60),
+            target_data.get('hrv_0200', 60),
             target_data.get('hrv_0400', 60),
-            target_data.get('hrv_0800', 60),
-            target_data.get('hrv_1200', 60)
+            target_data.get('hrv_0600', 60),
+            target_data.get('hrv_0800', 60)
         )
         
         # 代谢
@@ -1180,7 +1191,9 @@ class BioDashboard(QMainWindow):
             hrv_0800=target_data.get('hrv_0800', 60),
             rules_triggered=rules, # 简单传递，避免空值
             hrv_0000=target_data.get('hrv_0000', 60),
+            hrv_0200=target_data.get('hrv_0200', 60),
             hrv_0400=target_data.get('hrv_0400', 60),
+            hrv_0600=target_data.get('hrv_0600', 60),
             hrv_1200=target_data.get('hrv_1200', 60)
         )
         
@@ -1264,7 +1277,9 @@ class BioDashboard(QMainWindow):
             hrv_0800=data_dict['hrv_0800'],
             rules_triggered=report_result['metadata'].get('rules_triggered', []),
             hrv_0000=data_dict['hrv_0000'],
+            hrv_0200=data_dict.get('hrv_0200', 0),
             hrv_0400=data_dict['hrv_0400'],
+            hrv_0600=data_dict.get('hrv_0600', 0),
             hrv_1200=data_dict.get('hrv_1200', 0)
         )
         

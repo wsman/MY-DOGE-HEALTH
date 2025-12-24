@@ -200,7 +200,7 @@ class DatabaseManagerDialog(QDialog):
             # 设置表格 - 只显示关键字段，按指定顺序
             display_columns = ['date', 'timestamp', 'tags', 'analyst',
                               'total_sleep_min', 'deep_sleep_min', 'deep_sleep_ratio',
-                              'hrv_0000', 'hrv_0400', 'hrv_0800', 'hrv_1200',
+                              'hrv_0000', 'hrv_0200', 'hrv_0400', 'hrv_0600', 'hrv_0800',
                               'weight', 'fatigue_score', 'carb_limit_check', 'title']
             
             # 检查哪些列实际存在
@@ -236,7 +236,7 @@ class DatabaseManagerDialog(QDialog):
                         value_str = f"{hours}h{minutes}m"
                     elif col_name == 'deep_sleep_min':
                         value_str = f"{value}min"
-                    elif col_name in ['hrv_0000', 'hrv_0400', 'hrv_0800', 'hrv_1200']:
+                    elif col_name in ['hrv_0000', 'hrv_0200', 'hrv_0400', 'hrv_0600', 'hrv_0800']:
                         value_str = f"{value}ms"
                     elif col_name == 'weight':
                         value_str = f"{value}kg"
@@ -663,23 +663,29 @@ class BioRecordDialog(QDialog):
         self.hrv_0000.setSuffix(" ms")
         form_layout.addRow("0点 HRV:", self.hrv_0000)
         
+        self.hrv_0200 = QSpinBox()
+        self.hrv_0200.setRange(0, 200)
+        self.hrv_0200.setValue(70)
+        self.hrv_0200.setSuffix(" ms")
+        form_layout.addRow("2点 HRV:", self.hrv_0200)
+        
         self.hrv_0400 = QSpinBox()
         self.hrv_0400.setRange(0, 200)
         self.hrv_0400.setValue(85)
         self.hrv_0400.setSuffix(" ms")
         form_layout.addRow("4点 HRV:", self.hrv_0400)
         
+        self.hrv_0600 = QSpinBox()
+        self.hrv_0600.setRange(0, 200)
+        self.hrv_0600.setValue(75)
+        self.hrv_0600.setSuffix(" ms")
+        form_layout.addRow("6点 HRV:", self.hrv_0600)
+        
         self.hrv_0800 = QSpinBox()
         self.hrv_0800.setRange(0, 200)
         self.hrv_0800.setValue(70)
         self.hrv_0800.setSuffix(" ms")
         form_layout.addRow("8点 HRV:", self.hrv_0800)
-        
-        self.hrv_1200 = QSpinBox()
-        self.hrv_1200.setRange(0, 200)
-        self.hrv_1200.setValue(75)
-        self.hrv_1200.setSuffix(" ms")
-        form_layout.addRow("12点 HRV:", self.hrv_1200)
         
         # 代谢数据
         form_layout.addRow(QLabel("<b>代谢指标</b>"))
@@ -756,9 +762,10 @@ class BioRecordDialog(QDialog):
             
             # HRV数据
             self.hrv_0000.setValue(self.record.get('hrv_0000', 65))
+            self.hrv_0200.setValue(self.record.get('hrv_0200', 70))
             self.hrv_0400.setValue(self.record.get('hrv_0400', 85))
+            self.hrv_0600.setValue(self.record.get('hrv_0600', 75))
             self.hrv_0800.setValue(self.record.get('hrv_0800', 70))
-            self.hrv_1200.setValue(self.record.get('hrv_1200', 75))
             
             # 代谢数据
             self.weight_input.setValue(self.record.get('weight', 92.5))
@@ -792,9 +799,10 @@ class BioRecordDialog(QDialog):
                 'deep_sleep_min': deep_sleep_min,
                 'deep_sleep_ratio': deep_sleep_ratio,
                 'hrv_0000': self.hrv_0000.value(),
+                'hrv_0200': self.hrv_0200.value(),
                 'hrv_0400': self.hrv_0400.value(),
+                'hrv_0600': self.hrv_0600.value(),
                 'hrv_0800': self.hrv_0800.value(),
-                'hrv_1200': self.hrv_1200.value(),
                 'weight': self.weight_input.value(),
                 'fatigue_score': self.fatigue_score.value(),
                 'carb_limit_check': self.carb_limit_check.isChecked(),

@@ -34,9 +34,10 @@ def initialize_db() -> bool:
             deep_sleep_min INTEGER,       -- 深度睡眠分钟
             deep_sleep_ratio REAL,        -- 深度睡眠占比 (自动计算: deep / total)
             hrv_0000 INTEGER,             -- 0点 HRV (基准负载)
+            hrv_0200 INTEGER,             -- 2点 HRV
             hrv_0400 INTEGER,             -- 4点 HRV (巅峰修复)
+            hrv_0600 INTEGER,             -- 6点 HRV
             hrv_0800 INTEGER,             -- 8点 HRV (苏醒状态)
-            hrv_1200 INTEGER,             -- 12点 HRV (可选，日间恢复)
             weight REAL,                  -- 体重 (目标 < 93kg)
             fatigue_score INTEGER,        -- 主观疲劳度 (1-10)
             carb_limit_check BOOLEAN,     -- 睡前4小时禁碳水执行状态 (0/1)
@@ -75,9 +76,10 @@ def save_daily_log(data_dict: Dict[str, Any]) -> bool:
             - total_sleep_min: 总睡眠分钟（整数）
             - deep_sleep_min: 深度睡眠分钟（整数）
             - hrv_0000: 0点 HRV（整数）
+            - hrv_0200: 2点 HRV（整数）
             - hrv_0400: 4点 HRV（整数）
+            - hrv_0600: 6点 HRV（整数）
             - hrv_0800: 8点 HRV（整数）
-            - hrv_1200: 12点 HRV（整数，可选）
             - weight: 体重（浮点数）
             - fatigue_score: 疲劳度评分（整数，1-10）
             - carb_limit_check: 禁碳水执行状态（布尔值或整数 0/1）
@@ -92,7 +94,7 @@ def save_daily_log(data_dict: Dict[str, Any]) -> bool:
     """
     required_fields = [
         'date', 'total_sleep_min', 'deep_sleep_min', 
-        'hrv_0000', 'hrv_0400', 'hrv_0800', 'weight',
+        'hrv_0000', 'hrv_0200', 'hrv_0400', 'hrv_0600', 'hrv_0800', 'weight',
         'fatigue_score', 'carb_limit_check'
     ]
     
@@ -127,7 +129,8 @@ def save_daily_log(data_dict: Dict[str, Any]) -> bool:
         deep_sleep_ratio = 0.0
     
     # 处理可选字段
-    hrv_1200 = data_dict.get('hrv_1200', 0)
+    hrv_0200 = data_dict.get('hrv_0200', 0)
+    hrv_0600 = data_dict.get('hrv_0600', 0)
     report_content = data_dict.get('report_content', '')
     
     # 处理新字段
@@ -179,7 +182,7 @@ def save_daily_log(data_dict: Dict[str, Any]) -> bool:
         cursor.execute('''
             INSERT INTO biometric_logs 
             (date, timestamp, tags, analyst, total_sleep_min, deep_sleep_min, deep_sleep_ratio,
-             hrv_0000, hrv_0400, hrv_0800, hrv_1200,
+             hrv_0000, hrv_0200, hrv_0400, hrv_0600, hrv_0800,
              weight, fatigue_score, carb_limit_check, interventions, title, report_content)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(date) DO UPDATE SET
@@ -190,9 +193,10 @@ def save_daily_log(data_dict: Dict[str, Any]) -> bool:
                 deep_sleep_min = excluded.deep_sleep_min,
                 deep_sleep_ratio = excluded.deep_sleep_ratio,
                 hrv_0000 = excluded.hrv_0000,
+                hrv_0200 = excluded.hrv_0200,
                 hrv_0400 = excluded.hrv_0400,
+                hrv_0600 = excluded.hrv_0600,
                 hrv_0800 = excluded.hrv_0800,
-                hrv_1200 = excluded.hrv_1200,
                 weight = excluded.weight,
                 fatigue_score = excluded.fatigue_score,
                 carb_limit_check = excluded.carb_limit_check,
@@ -201,7 +205,7 @@ def save_daily_log(data_dict: Dict[str, Any]) -> bool:
                 report_content = excluded.report_content
         ''', (
             date_str, timestamp, tags, analyst, total_sleep, deep_sleep, deep_sleep_ratio,
-            data_dict['hrv_0000'], data_dict['hrv_0400'], data_dict['hrv_0800'], hrv_1200,
+            data_dict['hrv_0000'], hrv_0200, data_dict['hrv_0400'], hrv_0600, data_dict['hrv_0800'],
             data_dict['weight'], data_dict['fatigue_score'], carb_limit_int, interventions, title, report_content
         ))
         
@@ -342,9 +346,10 @@ def get_intervention_stats():
                 deep_sleep_min,
                 deep_sleep_ratio,
                 hrv_0000,
+                hrv_0200,
                 hrv_0400,
+                hrv_0600,
                 hrv_0800,
-                hrv_1200,
                 weight,
                 fatigue_score,
                 carb_limit_check,
@@ -364,7 +369,7 @@ def get_intervention_stats():
         
         # 确保数值列类型正确
         numeric_columns = ['total_sleep_min', 'deep_sleep_min', 'deep_sleep_ratio', 
-                          'hrv_0000', 'hrv_0400', 'hrv_0800', 'hrv_1200',
+                          'hrv_0000', 'hrv_0200', 'hrv_0400', 'hrv_0600', 'hrv_0800',
                           'weight', 'fatigue_score']
         for col in numeric_columns:
             if col in df.columns:
@@ -391,9 +396,10 @@ if __name__ == "__main__":
         'total_sleep_min': 480,  # 8小时
         'deep_sleep_min': 72,    # 1.2小时
         'hrv_0000': 65,
+        'hrv_0200': 70,
         'hrv_0400': 85,
+        'hrv_0600': 75,
         'hrv_0800': 70,
-        'hrv_1200': 75,
         'weight': 92.5,
         'fatigue_score': 3,
         'carb_limit_check': True,

@@ -14,8 +14,8 @@ def validate_data(data):
     
     # 检查必填字段
     required_fields = ['date', 'weight', 'total_sleep_min', 'deep_sleep_min', 
-                       'rem_sleep_min', 'hrv_0000', 'hrv_0400', 'hrv_0800', 
-                       'hrv_1200', 'fatigue_score', 'carb_limit_exec']
+                       'rem_sleep_min', 'hrv_0000', 'hrv_0200', 'hrv_0400', 
+                       'hrv_0600', 'hrv_0800', 'fatigue_score', 'carb_limit_exec']
     
     for field in required_fields:
         if field not in data or data[field] is None:
@@ -37,7 +37,7 @@ def validate_data(data):
     if data['rem_sleep_min'] < 0 or data['rem_sleep_min'] > data['total_sleep_min']:
         errors.append("REM睡眠时间不能超过总睡眠时间")
     
-    for hrv_field in ['hrv_0000', 'hrv_0400', 'hrv_0800', 'hrv_1200']:
+    for hrv_field in ['hrv_0000', 'hrv_0200', 'hrv_0400', 'hrv_0600', 'hrv_0800']:
         value = data[hrv_field]
         if value < 0 or value > 200:
             errors.append(f"{hrv_field}应在0-200ms之间")
@@ -83,9 +83,10 @@ def import_from_csv(csv_path):
                         'deep_sleep_min': int(row['deep_sleep_min']),
                         'rem_sleep_min': int(row['rem_sleep_min']),
                         'hrv_0000': int(row['hrv_0000']),
+                        'hrv_0200': int(row.get('hrv_0200', 0)),
                         'hrv_0400': int(row['hrv_0400']),
+                        'hrv_0600': int(row.get('hrv_0600', 0)),
                         'hrv_0800': int(row['hrv_0800']),
-                        'hrv_1200': int(row['hrv_1200']),
                         'fatigue_score': int(row['fatigue_score']),
                         'carb_limit_exec': row['carb_limit_exec'].lower() in ('true', '1', 'yes'),
                         'tags': row.get('tags', '')
@@ -188,7 +189,7 @@ def interactive_input():
                 print("请输入整数")
         
         # HRV数据
-        hrv_fields = ['0000', '0400', '0800', '1200']
+        hrv_fields = ['0000', '0200', '0400', '0600', '0800']
         for field in hrv_fields:
             while True:
                 try:
@@ -318,7 +319,7 @@ def main():
             print(f"  体重: {record['weight']}kg")
             print(f"  总睡眠: {record['total_sleep_min']}分钟")
             print(f"  深度睡眠: {record['deep_sleep_min']}分钟 ({record.get('deep_sleep_ratio', 0):.1%})")
-            print(f"  HRV: {record['hrv_0000']}/{record['hrv_0400']}/{record['hrv_0800']}/{record['hrv_1200']}ms")
+            print(f"  HRV: {record['hrv_0000']}/{record['hrv_0200']}/{record['hrv_0400']}/{record['hrv_0600']}/{record['hrv_0800']}ms")
             print(f"  HRV变化: Δ={record.get('hrv_delta', 0)}ms")
             print(f"  疲劳评分: {record['fatigue_score']}/10")
             print(f"  碳水限制: {'是' if record['carb_limit_exec'] else '否'}")

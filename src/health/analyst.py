@@ -119,7 +119,7 @@ class BiometricAnalyst:
         context_lines.append(f"体重: {today_data.get('weight', 'N/A')}kg (目标: <93.0kg)")
         context_lines.append(f"总睡眠: {today_data.get('total_sleep_min', 'N/A')}分钟")
         context_lines.append(f"深度睡眠: {today_data.get('deep_sleep_min', 'N/A')}分钟 (占比: {today_data.get('deep_sleep_ratio', 0):.1%})")
-        context_lines.append(f"HRV时序: {today_data.get('hrv_0000', 'N/A')} → {today_data.get('hrv_0400', 'N/A')} → {today_data.get('hrv_0800', 'N/A')} → {today_data.get('hrv_1200', 'N/A')}ms")
+        context_lines.append(f"HRV时序: {today_data.get('hrv_0000', 'N/A')} → {today_data.get('hrv_0200', 'N/A')} → {today_data.get('hrv_0400', 'N/A')} → {today_data.get('hrv_0600', 'N/A')} → {today_data.get('hrv_0800', 'N/A')}ms")
         context_lines.append(f"HRV变化: Δ={today_data.get('hrv_delta', 'N/A')}ms")
         context_lines.append(f"疲劳评分: {today_data.get('fatigue_score', 'N/A')}/10")
         context_lines.append(f"碳水限制执行: {'是' if today_data.get('carb_limit_exec') else '否'}")

@@ -31,9 +31,10 @@ def initialize_db():
             deep_sleep_min INTEGER,
             rem_sleep_min INTEGER,
             hrv_0000 INTEGER,
+            hrv_0200 INTEGER,
             hrv_0400 INTEGER,
+            hrv_0600 INTEGER,
             hrv_0800 INTEGER,
-            hrv_1200 INTEGER,
             fatigue_score INTEGER,
             carb_limit_exec BOOLEAN,
             tags TEXT,
@@ -59,8 +60,8 @@ def insert_biometric_data(data_dict):
         bool: 插入/更新是否成功
     """
     required_fields = ['date', 'weight', 'total_sleep_min', 'deep_sleep_min', 
-                       'rem_sleep_min', 'hrv_0000', 'hrv_0400', 'hrv_0800', 
-                       'hrv_1200', 'fatigue_score', 'carb_limit_exec']
+                       'rem_sleep_min', 'hrv_0000', 'hrv_0200', 'hrv_0400', 
+                       'hrv_0600', 'hrv_0800', 'fatigue_score', 'carb_limit_exec']
     
     # 检查必填字段
     for field in required_fields:
