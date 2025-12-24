@@ -184,7 +184,7 @@ def save_daily_log(data_dict: Dict[str, Any]) -> bool:
             (date, timestamp, tags, analyst, total_sleep_min, deep_sleep_min, deep_sleep_ratio,
              hrv_0000, hrv_0200, hrv_0400, hrv_0600, hrv_0800,
              weight, fatigue_score, carb_limit_check, interventions, title, report_content)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(date) DO UPDATE SET
                 timestamp = excluded.timestamp,
                 tags = excluded.tags,
